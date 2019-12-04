@@ -181,11 +181,7 @@ def get_calculation_multiplication(lower, upper, minint = 2, maxint = 9999, ntri
 
 
 if __name__ == '__main__':
-    # print 'calculating Q[n1+n2]'
-    # n1 = int(raw_input('n1: ').strip())
-    # n2 = int(raw_input('n2: ').strip())
-
-    # print q_multiplication(n1, n2)
-
-
-    print get_calculation_multiplication(3.5, 8.5, 99, 9999)
+    print 'calculating Q[n1+n2]'
+    n1 = int(raw_input('n1: ').strip())
+    n2 = int(raw_input('n2: ').strip())
+    print q_addition(n1, n2)
