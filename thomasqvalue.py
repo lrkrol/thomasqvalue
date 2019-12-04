@@ -151,8 +151,9 @@ def q_multiplication(x, multiplicand):
     
     
 def get_calculation_addition(lower, upper, minint = 1, maxint = 999, ntrials = 20000):
-    """ returns [n1, n2] where lower <= Q[n1+n2] <= upper,
-        and minint <= n1 <= maxint, minint <= n2 <= maxint; 
+    """ returns [n1, n2, q] where lower <= Q[n1+n2] <= upper,
+        and minint <= n1 <= maxint, minint <= n2 <= maxint,
+        and q = Q[n1+n2];
         otherwise, if no solution can be found within ntrials attempts,
         returns None """
     
@@ -166,8 +167,9 @@ def get_calculation_addition(lower, upper, minint = 1, maxint = 999, ntrials = 2
     
     
 def get_calculation_multiplication(lower, upper, minint = 2, maxint = 9999, ntrials = 20000):
-    """ returns [x, multiplicand] where lower <= Q[x*multiplicand] <= upper,
-        and 2 <= x <= 9, minint <= multiplicand <= maxint; 
+    """ returns [x, multiplicand, q] where lower <= Q[x*multiplicand] <= upper,
+        and 2 <= x <= 9, minint <= multiplicand <= maxint,
+        and q = Q[x*multiplicand];
         otherwise, if no solution can be found within ntrials attempts,
         returns None """
     
@@ -184,4 +186,5 @@ if __name__ == '__main__':
     print 'calculating Q[n1+n2]'
     n1 = int(raw_input('n1: ').strip())
     n2 = int(raw_input('n2: ').strip())
+
     print q_addition(n1, n2)
