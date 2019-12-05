@@ -57,6 +57,8 @@ failure even though calculations in the requested range do exist.
 """
 
 """
+2019-12-05 0.1.1 lrk
+  - Made get_calculation functions return list of Nones instead of single None
 2019-12-04 0.1.0 First version
 """
 
@@ -155,7 +157,7 @@ def get_calculation_addition(lower, upper, minint = 1, maxint = 999, ntrials = 2
         and minint <= n1 <= maxint, minint <= n2 <= maxint,
         and q = Q[n1+n2];
         otherwise, if no solution can be found within ntrials attempts,
-        returns None """
+        returns [None, None, None] """
     
     # trying to find a fitting calculation, otherwise returning None;
     for i in range(ntrials):
@@ -163,7 +165,7 @@ def get_calculation_addition(lower, upper, minint = 1, maxint = 999, ntrials = 2
         n2 = randint(minint, maxint)
         if q_addition(n1, n2) >= lower and q_addition(n1, n2) <= upper:
             return [n1, n2, q_addition(n1, n2)]
-    return None
+    return [None, None, None]
     
     
 def get_calculation_multiplication(lower, upper, minint = 2, maxint = 9999, ntrials = 20000):
@@ -171,7 +173,7 @@ def get_calculation_multiplication(lower, upper, minint = 2, maxint = 9999, ntri
         and 2 <= x <= 9, minint <= multiplicand <= maxint,
         and q = Q[x*multiplicand];
         otherwise, if no solution can be found within ntrials attempts,
-        returns None """
+        returns [None, None, None] """
     
     # trying to find a fitting calculation, otherwise returning None;
     for i in range(ntrials):
@@ -179,7 +181,7 @@ def get_calculation_multiplication(lower, upper, minint = 2, maxint = 9999, ntri
         multiplicand = randint(minint, maxint)
         if q_multiplication(x, multiplicand) >= lower and q_multiplication(x, multiplicand) <= upper:
             return [x, multiplicand, q_multiplication(x, multiplicand)]
-    return None
+    return [None, None, None]
 
 
 if __name__ == '__main__':
