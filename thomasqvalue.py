@@ -45,6 +45,19 @@ e.g. Q[10 + 1] = 0, whereas Q[11 + 1] = 0.6. Although I believe this to be in
 line with Thomas' argumentation, it may not be entirely in the original
 spirit -- Thomas himself did exclude all zeros, so use with caution.
 
+The subtraction procedure is implemented analogous to the addition procedure,
+where the short constellation leaves out the final resulting digit, making
+e.g. the first constellation for `11-2` to be `(1, 2, abs(1-2))`. This
+appears to be what Thomas intended: for "... one-stage sums ... in which the
+answer is not equal to the sum of the problem-digits, ... it is the answer
+which should be omitted ..." Note that this causes an invariance with respect
+to `d2` for sub-calculations that produce no carry, and an invariance with
+respect to `d1` when a carry is produced. Because of this, I am personally not
+entirely convinced this is correct, but Thomas does not discuss this.
+Subtraction has also been extended to accept zeros, where a Q-value of 0 is
+returned for each sub-calculation that subtracts 0, including the potential
+carry. 
+
 The multiplication procedure has not been generalised and still requires a
 one-digit number for the first part of the calculation. Presumably,
 generalisation requires a combination of multiplication and addition, but
@@ -57,6 +70,9 @@ failure even though calculations in the requested range do exist.
 """
 
 """
+2019-12-09 0.2.0 lrk
+  - q_addition now returns None for invalid input
+  - Added subtraction functions
 2019-12-05 0.1.1 lrk
   - Made get_calculation functions return list of Nones instead of single None
 2019-12-04 0.1.0 First version
@@ -68,8 +84,12 @@ from random import randint
 
 
 def q_addition(n1, n2):
-    """ returns Q[n1+n2] """
-
+    """ returns Q[n1+n2]
+        for n1 > 0 and n2 > 0,
+        otherwise, returns None """
+        
+    if not (n1 > 0 and n2 > 0): return None
+        
     # converting to string for easier digit iteration and zero-padding
     n1 = str(n1)
     n2 = str(n2)
@@ -102,10 +122,52 @@ def q_addition(n1, n2):
             carry = 1
         
     return Q
+
+
+def q_subtraction(n1, n2):
+    """ returns Q[n1-n2],
+        for n1 > 0, n2 > 0, and n2 < n1,
+        otherwise, returns None """
+        
+    if not (n1 > 0 and n2 > 0 and n2 < n1): return None
+
+    # converting to string for easier digit iteration and zero-padding
+    n1 = str(n1)
+    n2 = str(n2)
+    
+    # zero-padding
+    length = max(len(n1), len(n2))
+    if len(n1) is not len(n2): 
+        n1 = str(n1).zfill(length)
+        n2 = str(n2).zfill(length)
+    
+    # calculating Q-value one digit pair at a time
+    Q = 0
+    carry = 0
+    for d in range(length-1, -1, -1):
+        d1 = int(n1[d])
+        d2 = int(n2[d])
+        
+        if d2 == 0 and carry == 0:
+            # no calculation necessary
+            pass
+        elif d1 - d2 - carry >= 0:
+            # subtraction that does not produce a carry
+            # constellation: d1, d12 |d1-d2|, and potential 1 from previous carry
+            Q += log10(d1 + d2 + abs(d1-d2) + carry)
+            carry = 0
+        elif d1 - d2 - carry < 0:
+            # subtraction that does produce a carry
+            # constellation: d1, d2, |d1-d2|, 10, and potential 1 from previous carry
+            Q += log10(d1 + d2 + abs(d1-d2) + 10 + carry)
+            carry = 1
+        
+    return Q
     
     
 def q_multiplication(x, multiplicand):
-    """ returns Q[x*multiplicand] for 2 <= x <= 9 """
+    """ returns Q[x*multiplicand] for 2 <= x <= 9,
+        otherwise, returns None """
     
     if x < 2 or x > 9: return None
     
@@ -167,6 +229,22 @@ def get_calculation_addition(lower, upper, minint = 1, maxint = 999, ntrials = 2
             return [n1, n2, q_addition(n1, n2)]
     return [None, None, None]
     
+    
+def get_calculation_subtraction(lower, upper, minint = 1, maxint = 999, ntrials = 20000):
+    """ returns [n1, n2, q] where lower <= Q[n1-n2] <= upper,
+        and minint <= n1 <= maxint, minint <= n2 <= n1,
+        and q = Q[n1-n2];
+        otherwise, if no solution can be found within ntrials attempts,
+        returns [None, None, None] """
+    
+    # trying to find a fitting calculation, otherwise returning None;
+    for i in range(ntrials):
+        n1 = randint(minint, maxint)
+        n2 = randint(minint, n1)
+        if q_subtraction(n1, n2) >= lower and q_subtraction(n1, n2) <= upper:
+            return [n1, n2, q_subtraction(n1, n2)]
+    return [None, None, None]
+        
     
 def get_calculation_multiplication(lower, upper, minint = 2, maxint = 9999, ntrials = 20000):
     """ returns [x, multiplicand, q] where lower <= Q[x*multiplicand] <= upper,
