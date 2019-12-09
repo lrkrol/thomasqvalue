@@ -239,7 +239,7 @@ def get_calculation_subtraction(lower, upper, minint = 1, maxint = 999, ntrials 
     
     # trying to find a fitting calculation, otherwise returning None;
     for i in range(ntrials):
-        n1 = randint(minint, maxint)
+        n1 = randint(minint+2, maxint)
         n2 = randint(minint, n1-1)
         if q_subtraction(n1, n2) >= lower and q_subtraction(n1, n2) <= upper:
             return [n1, n2, q_subtraction(n1, n2)]
