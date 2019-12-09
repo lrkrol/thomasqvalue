@@ -232,7 +232,7 @@ def get_calculation_addition(lower, upper, minint = 1, maxint = 999, ntrials = 2
     
 def get_calculation_subtraction(lower, upper, minint = 1, maxint = 999, ntrials = 20000):
     """ returns [n1, n2, q] where lower <= Q[n1-n2] <= upper,
-        and minint <= n1 <= maxint, minint <= n2 <= n1,
+        and minint <= n1 <= maxint, minint <= n2 <= n1-1,
         and q = Q[n1-n2];
         otherwise, if no solution can be found within ntrials attempts,
         returns [None, None, None] """
@@ -240,7 +240,7 @@ def get_calculation_subtraction(lower, upper, minint = 1, maxint = 999, ntrials 
     # trying to find a fitting calculation, otherwise returning None;
     for i in range(ntrials):
         n1 = randint(minint, maxint)
-        n2 = randint(minint, n1)
+        n2 = randint(minint, n1-1)
         if q_subtraction(n1, n2) >= lower and q_subtraction(n1, n2) <= upper:
             return [n1, n2, q_subtraction(n1, n2)]
     return [None, None, None]
